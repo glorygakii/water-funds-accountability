@@ -1,107 +1,73 @@
-# Climate-Smart Agriculture Analytics
+# Water Funds Accountability Dashboard
 
-A Python data science project analysing crop yield patterns against climate variables to guide agricultural planning in Sub-Saharan Africa.
+A data analysis project investigating financial irregularities in water infrastructure spending using SQL and Power BI.
 
 ## Project Overview
 
-Maji Ndogo is a fictional region used as a simulated dataset by ExploreAI Academy, modelled on real agricultural challenges across Sub-Saharan Africa. This project analyses crop yield data against climate variables to identify patterns that could help farmers and agricultural planners make better decisions about what to grow, when to plant, and where to invest.
+Maji Ndogo is a fictional region used as a simulated dataset by ExploreAI Academy, modelled on real water access challenges across Sub-Saharan Africa. This project investigates financial irregularities within that dataset, looking for patterns that could indicate fraud, misallocation, or corruption in public water spending.
 
 ## Live Portfolio Page
 
-View the full case study at: [glorygakii.com/projects/agriculture-pipeline.html](https://glorygakii.com/projects/agriculture-pipeline.html)
+View the full case study at: [glorygakii.com/projects/water-access.html](https://glorygakii.com/projects/water-access.html)
 
 ## Tools Used
 
-- Python 3
-- Pandas
-- Matplotlib
-- SQLAlchemy
-- Jupyter Notebook
-- Excel
+- MySQL Workbench
+- Power BI
+- Excel (Pivot Tables)
+- SQL Window Functions
 
 ## Screenshots
 
-### Crop Yield & Climate Analysis
-![Crop Yield & Climate Analysis](assets/python-analysis.png)
+### Power BI Dashboard
+![Power BI Dashboard](assets/dashboard.png)
 
-### Data Ingestion & Pipeline
-![Data Pipeline](assets/python-pipeline.png)
+### SQL Analysis
+![SQL Analysis](assets/sql-analysis.png)
 
-### Excel Summary Output
-![Excel Summary](assets/agriculture-excel.png)
+### Excel Pivot Table Summary
+![Excel Summary](assets/water-excel.png)
 
-## Notebooks
+## Database Tables
 
-| Notebook | Description |
-|----------|-------------|
-| [P1 — Data Cleaning & Analysis](notebooks/P1_data_cleaning_analysis.ipynb) | Introduces the Maji Ndogo dataset; performs data cleanup and analysis covering crop preferences, fertile grounds, climate and geography, and data filtering |
-| [P2 — Exploratory Data Analysis](notebooks/P2_EDA_analysis.ipynb) | Univariate and multivariate analysis across geographic, weather, and soil features; explores crop yield relationships across 8 crop types including coffee |
-| [P3 — Data Pipeline & Validation](notebooks/P3_data_pipeline.ipynb) | Refactors code into a modular pipeline (ingestion, cleaning, corrections); validates the full dataset against weather station data using hypothesis testing |
+- Database: md_water_services
+- Tables: water_source, location, visits
 
-## Pipeline Stages
+## Key SQL Techniques
 
-1. **Data Ingestion** — SQLite database and web CSV sources
-2. **Data Cleaning** — fixing column swaps, spelling errors, negative values
-3. **Statistical Analysis** — correlation between climate variables and crop yields
-4. **Visualisation** — Matplotlib charts
-5. **Excel Export** — clean summary for non-technical stakeholders
+- Multi-table JOINs across relational database
+- Window functions: SUM() OVER, PARTITION BY, ORDER BY
+- Aggregations: COUNT, SUM, AVG, ROUND
+- Anomaly detection through statistical comparison
 
-## Key Python Techniques
+## Core Query
 
-- Modular pipeline design using functions and classes
-- Multi-table SQL JOINs via SQLAlchemy
-- Data cleaning and validation with Pandas
-- Statistical correlation analysis across 8 crop types
-- Matplotlib visualisations for data storytelling
-- Excel export using openpyxl
-
-## Core Pipeline Code
-
-```python
-def create_db_engine(db_path):
-    """Creates and returns a SQLAlchemy database engine."""
-    engine = create_engine(db_path)
-    return engine
-
-def query_data(engine, sql_query):
-    """Queries the database and returns a DataFrame."""
-    with engine.connect() as connection:
-        df = pd.read_sql_query(text(sql_query), connection)
-        return df
-
-def read_from_web_CSV(URL):
-    """Reads a CSV file from a web URL into a DataFrame."""
-    df = pd.read_csv(URL)
-    return df
-
-# Run the full pipeline
-field_df   = query_data(create_db_engine(config_params['db_path']),
-                        config_params['sql_query'])
-weather_df = read_from_web_CSV(config_params['weather_csv_path'])
+```sql
+SELECT
+    l.province_name,
+    l.location_type,
+    ws.type_of_water_source,
+    COUNT(*) AS total_sources,
+    SUM(ws.number_of_people_served) AS people_served,
+    ROUND(AVG(v.time_in_queue), 0) AS avg_wait_time_mins,
+    ROUND(
+        SUM(ws.number_of_people_served) * 100.0 /
+        SUM(SUM(ws.number_of_people_served))
+        OVER (PARTITION BY l.province_name), 2
+    ) AS pct_of_province
+FROM visits v
+JOIN water_source ws ON v.source_id = ws.source_id
+JOIN location l ON v.location_id = l.location_id
+GROUP BY l.province_name, l.location_type, ws.type_of_water_source
+ORDER BY l.province_name, people_served DESC;
 ```
 
 ## Key Findings
 
-- Identified strong correlation between seasonal rainfall and crop yields across regions
-- Flagged temperature anomaly years where yields dropped significantly
-- Validated data integrity by cross-referencing field measurements against weather station records
-- Produced a clean Excel summary accessible to agricultural extension officers
-- Built a reproducible pipeline that can be rerun as new data becomes available
-
-## Project Structure
-
-```
-climate-smart-agriculture/
-├── notebooks/
-│   ├── P1_data_cleaning_analysis.ipynb
-│   ├── P2_EDA_analysis.ipynb
-│   └── P3_data_pipeline.ipynb
-├── data/
-│   └── Maji_Ndogo_farm_survey_small.db
-├── outputs/
-│   └── agriculture_summary.xlsx
-└── README.md
-```
+- Identified sources with disproportionately high visit counts relative to population served
+- Flagged employee records with irregular audit scores across multiple sites
+- Summarised provincial water access patterns in an Excel pivot table
+- Built a Power BI dashboard making findings accessible to non-technical stakeholders
 
 ## Author
 
