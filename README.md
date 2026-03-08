@@ -75,4 +75,4 @@ Glory Gakii Mbiti — Data Scientist and BI Analyst based in Nairobi, Kenya
 
 - Portfolio: [glorygakii.com](https://glorygakii.com)
 - LinkedIn: [linkedin.com/in/glorygakii](https://linkedin.com/in/glorygakii)
-- Email: [gakiimbiti6@gmail.com](mailto:gakiimbiti6@gmail.com)
+- Contact: [glorygakii.com/contact](https://glorygakii.com/contact)
